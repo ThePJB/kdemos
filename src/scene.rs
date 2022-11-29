@@ -1,4 +1,5 @@
 use crate::renderers::font_rendering::*;
+use crate::renderers::mesh_renderer::MeshBuilder;
 use crate::renderers::simple_renderer::*;
 use crate::kinput::*;
 use crate::texture_buffer::*;
@@ -13,6 +14,10 @@ pub struct FrameOutputs {
     pub set_texture: Vec<(TextureBuffer, usize)>,
     pub draw_texture: Vec<(Rect, usize)>,
     pub glyphs: GlyphBuffer,
+
+    pub set_mesh: Option<MeshBuilder>,
+    pub set_mesh_texture: Option<TextureBuffer>,
+    pub draw_mesh: Option<([f32;16], [f32;16], Vec3, Vec3)>,
 }
 
 impl FrameOutputs {
@@ -22,6 +27,9 @@ impl FrameOutputs {
             canvas: SimpleCanvas::new(a),
             set_texture: Vec::new(),
             draw_texture: Vec::new(),
+            set_mesh: None,
+            set_mesh_texture: None,
+            draw_mesh: None,
         }
     }
 }

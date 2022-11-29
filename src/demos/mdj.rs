@@ -33,14 +33,29 @@ impl MDJ {
     pub fn new(w: usize, h: usize) -> MDJ {
         let mut colour_palette = Vec::new();
 
+
+
         colour_palette.push(Vec4::new(0.0, 0.0, 0.0, 1.0));
+
         let start = Vec4::new(1.0, 0.4, 0.0, 1.0);
-        let end = Vec4::new(0.9, 0.7, 0.0, 1.0);
+        let middle = Vec4::new(0.9, 0.0, 0.7, 1.0);
+        let end = Vec4::new(0.9, 0.0, 0.7, 1.0);
+
+
+
+        // let start = Vec4::new(1.0, 0.0, 0.4, 1.0);
+        let end = Vec4::new(0.9, 0.0, 0.7, 1.0);
+        let start = Vec4::new(1.0, 0.4, 0.0, 1.0);
+        // let end = Vec4::new(0.9, 0.7, 0.0, 1.0);
         for i in 0..MAX_ITERATIONS/2 {
             colour_palette.push(start.lerp(end, i as f64/(MAX_ITERATIONS/2) as f64));
         };
 
-        let start = Vec4::new(0.9, 0.7, 0.0, 1.0);
+        
+        let start = Vec4::new(0.9, 0.0, 0.7, 1.0);
+        // let start = Vec4::new(0.9, 0.7, 0.0, 1.0);
+
+
         let end = Vec4::new(0.2, 0.7, 0.5, 1.0);
         for i in 0..MAX_ITERATIONS/2 {
             colour_palette.push(start.lerp(end, i as f64/(MAX_ITERATIONS/2) as f64));

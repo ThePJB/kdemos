@@ -104,6 +104,8 @@ pub struct Vec2 {
 
 impl Vec2 {
     pub const fn new(x: f64, y: f64) -> Vec2 { Vec2{x, y} }
+    pub fn plus(&self, other: Vec2) -> Vec2 { {Vec2::new(self.x + other.x, self.y + other.y)} }
+    pub fn minus(&self, other: Vec2) -> Vec2 { {Vec2::new(self.x + other.x, self.y + other.y)} }
     pub fn new_r_theta(r: f64, theta: f64) -> Vec2 { Vec2{x: r * theta.cos(), y: r * theta.sin()} }
     pub fn mul_scalar(&self, scalar: f64) -> Vec2 { Vec2::new(self.x * scalar, self.y * scalar) }
     pub fn div_scalar(&self, scalar: f64) -> Vec2 { Vec2::new(self.x / scalar, self.y / scalar) }
@@ -130,12 +132,23 @@ impl Vec2 {
             ((self.y - from.y) / from.h) * to.h + to.y,
         )
     }
+    // consider this
     pub fn complex_mul(&self, other: Vec2) -> Vec2 {
         let a = self.x;
         let b = self.y;
         let c = other.x;
         let d = other.y;
         Vec2::new(a*c - b*d, a*d + c*b)
+    }
+    pub fn complex_div(&self, other: Vec2) -> Vec2 {
+        let a = self.x;
+        let b = self.y;
+        let c = other.x;
+        let d = other.y;
+
+        let denom = c*c + d*d;
+
+        Vec2::new(a*c + b*d, b*c - a*d) / denom
     }
     pub fn rect_centered(&self, w: f64, h: f64) -> Rect {
         Rect::new(self.x - w/2.0, self.y - h/2.0, w, h)
@@ -305,7 +318,7 @@ impl Vec4 {
     pub fn normalize(&self) -> Vec4 { self.div_scalar(self.magnitude()) }
     pub fn lerp(&self, other: Vec4, t: f64) -> Vec4 { Vec4::new(self.x*(1.0-t) + other.x*(t), self.y*(1.0-t) + other.y*(t), self.z*(1.0-t) + other.z*(t), self.w*(1.0-t) + other.w*t) }
     pub fn dist(&self, other: Vec4) -> f64 {(*self - other).magnitude().sqrt()}
-    pub fn dot(&self, other: Vec4) -> f64 {self.x*other.x + self.y*other.y + self.z*other.z} // is squ dist lol
+    pub fn dot(&self, other: Vec4) -> f64 {self.x*other.x + self.y*other.y + self.z*other.z + self.w*other.w} // is squ dist lol
     pub fn hsv_to_rgb(&self) -> Vec4 {
         let v = self.z;
         let hh = (self.x % 360.0) / 60.0;
@@ -641,4 +654,141 @@ impl Triangle {
         Rect { x: min_x, y: min_y, w: max_x - min_x, h: max_y - min_y }
 
     }
+}
+
+pub fn mat4_mul(a: [f32; 16], b: [f32; 16]) -> [f32; 16] {
+    let mut r = [0.0f32; 16];
+    for i in 0..4 {
+        for j in 0..4 {
+            r[4* j + i] = Vec4::new(a[4*j + 0] as f64, a[4*j + 1] as f64, a[4*j + 2] as f64, a[4*j + 3] as f64).dot(Vec4::new(b[4*0 + i] as f64, b[4*1 + i] as f64, b[4*2 + i] as f64, b[4*3 + i] as f64)) as f32;
+        }
+    }
+    r
+}
+
+pub fn view(pos: Vec3, target: Vec3) -> [f32; 16] {
+    let up = Vec3::new(0.0, 1.0, 0.0);
+    let f = (target - pos).normalize();
+    let r = f.cross(up);
+    let vup = up - up.dot(f) * f;
+
+    let vr = [
+        r.x as f32, r.y as f32, r.z as f32, 0.,
+        vup.x as f32, vup.y as f32, vup.z as f32, 0.,
+        -f.x as f32, -f.y as f32, -f.z as f32, 0.,
+        0., 0., 0., 1.,
+    ];
+
+    let vt = [
+        1., 0., 0., -pos.x as f32,
+        0., 1., 0., -pos.y as f32,
+        0., 0., 1., -pos.z as f32,
+        0., 0., 0., 1.,
+    ];
+
+    mat4_mul(vr, vt)
+}
+
+pub fn roty(theta: f32) -> [f32; 16] {
+    [
+        theta.cos(), 0., theta.sin(), 0.,
+        0., 1., 0., 0.,
+        -theta.sin(), 0., theta.cos(), 0.,
+        0., 0., 0., 1.,
+    ]
+}
+
+pub fn translation(x: f32, y: f32, z: f32) -> [f32; 16] {
+    [
+        1., 0., 0., x,
+        0., 1., 0., y,
+        0., 0., 1., z,
+        0., 0., 0., 1.,
+    ]
+}
+
+pub fn mat4_trans(a: [f32; 16]) -> [f32; 16] {
+    [
+        a[0], a[4], a[8], a[12],
+        a[1], a[5], a[9], a[13],
+        a[2], a[6], a[10], a[14],
+        a[3], a[7], a[11], a[15],
+    ]
+}
+
+pub fn proj(fov: f32, a: f32, n: f32, f: f32) -> [f32; 16] {
+    let d = 1.0 / (fov/2.0).tan();
+    [
+        d/a, 0., 0., 0.,
+        0., d, 0., 0.,
+        0., 0., (n+f)/(n-f), 2.0*(f*n)/(n-f),
+        0., 0., -1., 0.,
+    ]
+}
+
+fn print_mat(a: [f32; 16]) {
+    for i in 0..16 {
+        if i == 0 || i == 4 || i == 8 || i == 12 {
+            print!{"\t"};
+        }
+        if i == 3 || i == 7 || i == 11 || i == 15 {
+            print!("{:>8.4}\n", a[i]);
+        } else {
+            print!("{:>8.4} ", a[i]);
+        }
+    }
+}
+
+
+// make a lovely test that shows it all super clear
+
+#[test]
+fn test_view() {
+    let pos = Vec3::new(0.0, 0.0, 0.0);
+    let target = Vec3::new(0.0, 0.0, -1.0);
+    let view = view(pos, target);
+
+    println!("pos: {}", pos);
+    println!("target: {}", target);
+    println!("\nview (should be identity):");
+    print_mat(view);
+    println!("");
+
+}
+
+#[test]
+fn test_pv() {
+    let pos = Vec3::new(0.0, 0.5, 0.0);
+    let target = Vec3::new(0.5, 0.0, 0.5);
+    let view = view(pos, target);
+
+    println!("pos: {}", pos);
+    println!("target: {}", target);
+    println!("\nview:");
+    print_mat(view);
+    println!("");
+
+    let p = [target.x as f32, target.y as f32, target.z as f32, 1.0];
+    let p = mat4_mul_v4(view, p);
+    println!("view x target: {:?} (should be in -z)", p);
+
+    let n = 0.01;
+    let f = 100.0;
+    let proj = proj(1.0, 1.0, n, f);
+    println!("\nproj:");
+    print_mat(proj);
+    println!("");
+
+    println!("proj x view x target {:?} (should be between -1 and 1)", mat4_mul_v4(proj, p));
+    println!("proj x thing at -near {:?} (should be -1)", mat4_mul_v4(proj, [0., 0., -n, 1.]));
+    println!("proj x thing at -far {:?} (should be 1)", mat4_mul_v4(proj, [0., 0., -f, 1.]));
+}
+
+pub fn mat4_mul_v4(a: [f32; 16], b: [f32; 4]) -> [f32; 4] {
+    [
+        b[0]*a[0] + b[1]*a[1] + b[2]*a[2] + b[3]*a[3],
+        b[0]*a[4] + b[1]*a[5] + b[2]*a[6] + b[3]*a[7],
+        b[0]*a[8] + b[1]*a[9] + b[2]*a[10] + b[3]*a[11],
+        b[0]*a[12] + b[1]*a[13] + b[2]*a[14] + b[3]*a[15],
+    ]
 }

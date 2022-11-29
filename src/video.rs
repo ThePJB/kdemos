@@ -1,9 +1,11 @@
 use glow::*;
 use crate::renderers::ct_renderer::*;
+use crate::renderers::mesh_renderer;
+use crate::renderers::mesh_renderer::*;
 use crate::renderers::simple_renderer::*;
 use crate::renderers::texture_renderer::*;
-use crate::scene::*;
 use crate::renderers::font_rendering::*;
+use crate::scene::*;
 
 pub struct Video {
     pub gl: glow::Context,
@@ -13,7 +15,8 @@ pub struct Video {
 
     pub simple_renderer: SimpleRenderer,
     pub texture_renderer: TextureRenderer,
-    pub ct_renderer: CTRenderer
+    pub ct_renderer: CTRenderer,
+    pub mesh_renderer: MeshRenderer,
 }
 
 impl Video {
@@ -49,6 +52,7 @@ impl Video {
         let simple_renderer = SimpleRenderer::new(&gl);
         let texture_renderer = TextureRenderer::new(&gl);
         let ct_renderer = CTRenderer::new(&gl, "font.png");
+        let mesh_renderer = MeshRenderer::new(&gl);
 
         Video {
             gl,
@@ -58,17 +62,31 @@ impl Video {
             simple_renderer,
             texture_renderer,
             ct_renderer,
+            mesh_renderer,
         }
     }
 
     pub fn render(&mut self, outputs: &FrameOutputs, a: f64) {
         unsafe {
+            if let Some(mb) = &outputs.set_mesh {
+                self.mesh_renderer.update_mesh(&self.gl, mb)
+            }
+            if let Some(tb) = &outputs.set_mesh_texture {
+                self.mesh_renderer.update_texture(&self.gl, tb)
+            }
+
             for (buf, idx) in &outputs.set_texture {
                 self.texture_renderer.update(&self.gl, buf, *idx);
             }
 
             self.gl.clear_color(0.0, 0.0, 0.0, 1.0);
             self.gl.clear(glow::COLOR_BUFFER_BIT | glow::DEPTH_BUFFER_BIT); 
+
+
+            if let Some((pv, mm, cp, cd)) = &outputs.draw_mesh {
+                self.mesh_renderer.render(&self.gl, *pv, *mm, *cp, *cd);
+            }
+
 
             for (r, idx) in &outputs.draw_texture {
                 self.texture_renderer.render(&self.gl, *r, a, *idx);
@@ -79,6 +97,7 @@ impl Video {
 
             let font_ct_canvas = glyph_buffer_to_canvas(&outputs.glyphs, a);
             self.ct_renderer.render(&self.gl, &font_ct_canvas);
+
 
             self.window.swap_buffers().unwrap();
         }

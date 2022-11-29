@@ -12,6 +12,11 @@ use crate::demos::rgbwalk::*;
 use crate::demos::rgbutm::*;
 use crate::demos::noise_test::*;
 use crate::demos::voronoinoi::*;
+use crate::demos::new_fractal::*;
+use crate::demos::wildfire::*;
+use crate::demos::wildfire_evo::*;
+use crate::demos::terrain::*;
+use crate::demos::hydrasim::*;
 
 pub struct RootScene {
     curr_scene: Option<Box<dyn Demo>>,
@@ -30,6 +35,7 @@ impl RootScene {
         demo_table.push(("Mandel-Julia", init_demo::<MDJ>));
         demo_table.push(("Burning Ship", init_demo::<BurningShip>));
         demo_table.push(("Burn-Julia", init_demo::<BSJ>));
+        demo_table.push(("New Fractal", init_demo::<NewFractal>));
         
         // Random walk
         demo_table.push(("RGBWalk", init_demo::<RGBWalk>));
@@ -41,6 +47,10 @@ impl RootScene {
         // Others
         demo_table.push(("Percolation", init_demo::<Percoviz>));
         demo_table.push(("Bowyer Watson", init_demo::<Voronoinoi>));
+        demo_table.push(("Wildfire", init_demo::<Wildfire>));
+        demo_table.push(("Wildfire Evo", init_demo::<WildfireEvo>));
+        demo_table.push(("Terrain", init_demo::<Terrain>));
+        demo_table.push(("Hydrasim", init_demo::<Hydrasim>));
 
         RootScene {
             curr_scene: None,

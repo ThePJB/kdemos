@@ -28,8 +28,8 @@ impl TextureRenderer {
             let program = gl.create_program().expect("Cannot create program");
             let vertex_src = r#"
                 #version 330 core
-                in vec3 in_pos;
-                in vec2 in_uv;
+                layout (location = 0) in vec3 in_pos;
+                layout (location = 1) in vec2 in_uv;
 
                 const mat4 projection = mat4(
                     2, 0, 0, 0,

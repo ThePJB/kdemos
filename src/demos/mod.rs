@@ -9,3 +9,8 @@ pub mod noise_test;
 pub mod voronoinoi;
 pub mod bsj;
 pub mod mdj;
+pub mod new_fractal;
+pub mod wildfire;
+pub mod wildfire_evo;
+pub mod terrain;
+pub mod hydrasim;

@@ -127,3 +127,22 @@ inputs: scroll mousewheel needs to go in as do key repeats
 you want some composable node structure dont you
 like a scene graph
 monad shit
+
+
+
+
+### Mesh debugging
+something is wrong because:
+   - well camera is wrong
+   - why is vert_colour black iunstead of white
+      - why can't I see other attributes in renderDoc i.e. in_colour which should be white???
+
+
+
+almost working why is in_colour == 00??????
+not sure if arg to draw elements is number of triangles orn umber of verts, i might be askking for 3x as many
+
+
+almost working
+todo just fix camera
+make that thing just take a matrix and put in the exact matrix
