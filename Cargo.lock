@@ -462,6 +462,7 @@ dependencies = [
  "glow",
  "glutin",
  "num 0.4.0",
+ "ordered-float",
  "palette",
  "png",
  "winit",
@@ -821,6 +822,15 @@ name = "once_cell"
 version = "1.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2f7254b99e31cad77da24b08ebf628882739a608578bb1bcdfc1f9c21260d7c0"
+
+[[package]]
+name = "ordered-float"
+version = "3.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d84eb1409416d254e4a9c8fa56cc24701755025b458f0fcd8e59e1f5f40c23bf"
+dependencies = [
+ "num-traits",
+]
 
 [[package]]
 name = "osmesa-sys"

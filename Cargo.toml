@@ -16,5 +16,7 @@ assert_hex = "0.2.2"
 
 num = "0.4.0"
 
+ordered-float = "3.4.0"
+
 [profile.release]
 opt-level = 3
