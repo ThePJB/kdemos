@@ -190,7 +190,7 @@ fn level(x: f32, y: f32, seed: u32) -> (f32, f32, f32) {
     }
     
     // or sin with random phase or something
-    let boulders =  open[d_sorted[0].0] && noise2d(x_orig * 96.0, y_orig * 96.0, seed* 151591714) > 0.8 && noise2d(x_orig * 16.0, y_orig * 16.0, seed * 1571577) > 0.6;
+    let boulders = open[d_sorted[0].0] && noise2d(x_orig * 96.0, y_orig * 96.0, seed* 151591714) > 0.8 && noise2d(x_orig * 16.0, y_orig * 16.0, seed * 1571577) > 0.6;
     if boulders {
         return (0.0, 0.0, 0.0);
     }

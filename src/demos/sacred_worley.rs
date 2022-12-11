@@ -7,7 +7,7 @@ use crate::kinput::*;
 use glutin::event::VirtualKeyCode;
 use ordered_float::OrderedFloat;
 
-pub struct WizradTerrain {
+pub struct SacredWorley {
     w: usize,
     h: usize,
 
@@ -16,15 +16,15 @@ pub struct WizradTerrain {
     stale: bool,
 }
 
-impl Default for WizradTerrain {
+impl Default for SacredWorley {
     fn default() -> Self {
-        Self::new(800, 800)
+        Self::new(400, 400)
     }
 }
 
-impl WizradTerrain {
-    pub fn new(w: usize, h: usize) -> WizradTerrain {
-        WizradTerrain {
+impl SacredWorley {
+    pub fn new(w: usize, h: usize) -> SacredWorley {
+        SacredWorley {
             w,
             h,
             seed: 69,
@@ -33,36 +33,34 @@ impl WizradTerrain {
     }
 }
 
-impl Demo for WizradTerrain {
+impl Demo for SacredWorley {
     fn frame(&mut self, inputs: &FrameInputState, outputs: &mut FrameOutputs) {
         if inputs.key_rising(VirtualKeyCode::R) {
             self.seed += 1;
             self.stale = true;
         }
         
-        if self.stale {
-            let mut t = TextureBuffer::new(self.w, self.h);
-            for i in 0..self.w {
-                for j in 0..self.h {
-                    let x = i as f32 / self.w as f32;
-                    let y = j as f32 / self.h as f32;
-                    let w3 = worley3(x * 8.0, y * 8.0, self.seed);
+        let mut t = TextureBuffer::new(self.w, self.h);
+        for i in 0..self.w {
+            for j in 0..self.h {
+                let x = i as f32 / self.w as f32;
+                let y = j as f32 / self.h as f32;
+                let w3 = worley3(x * 8.0, y * 8.0, inputs.t as f32, self.seed);
 
-                    let colour = Vec4::new(
-                        w3[0] as f64 * 2.0,
-                        w3[1] as f64 * 1.5,
-                        0.0,//w3[2] as f64,
-                        1.0,
-                    );
+                let colour = Vec4::new(
+                    w3[0] as f64 * 2.0,
+                    w3[1] as f64 * 1.5,
+                    w3[2] as f64,
+                    1.0,
+                );
 
-                    // let colour = Vec4::new(0.0, 0.0, 0.0, 1.0).lerp(Vec4::new(1.0, 1.0, 1.0, 1.0), walkable(i as f32 / self.w as f32, j as f32 / self.h as f32, self.seed) as f64);
+                // let colour = Vec4::new(0.0, 0.0, 0.0, 1.0).lerp(Vec4::new(1.0, 1.0, 1.0, 1.0), walkable(i as f32 / self.w as f32, j as f32 / self.h as f32, self.seed) as f64);
 
-                    t.set(i as i32, j as i32, colour);
-                }
+                t.set(i as i32, j as i32, colour);
             }
-            outputs.set_texture.push((t, 0));
-
         }
+        outputs.set_texture.push((t, 0));
+
  
         outputs.draw_texture.push((inputs.screen_rect, 0));
     }
@@ -85,6 +83,11 @@ pub fn floorfrac(x: f32) -> (f32, f32) {
 }
 pub fn smoothstep(t: f32) -> f32 {
     t * t * (3. - 2. * t)
+}
+pub fn noise1d(t: f32, seed: u32) -> f32 {
+    let hstart = rand(seed + 489172373 * t.floor() as u32);
+    let hend = rand(seed + 489172373 * (t.floor() + 1.0) as u32);
+    lerp(hstart, hend, smoothstep(t.fract()))
 }
 fn noise2d(x: f32, y: f32, seed: u32) -> f32 {
     let (xfloor, xfrac) = floorfrac(x);
@@ -227,7 +230,7 @@ fn morely(x: f32, y: f32, seed: u32) -> f32 {
     // mind
 }
 
-fn worley3(x: f32, y: f32, seed: u32) -> [f32; 3] {
+fn worley3(x: f32, y: f32, t: f32, seed: u32) -> [f32; 3] {
     let (xfloor, xfrac) = floorfrac(x);
     let (yfloor, yfrac) = floorfrac(y);
 
@@ -237,8 +240,9 @@ fn worley3(x: f32, y: f32, seed: u32) -> [f32; 3] {
     let mut py = [0.0; 9];
     for i in 0..9 {
         let si = khash2i(xvalues[i] as i32, yvalues[i] as i32, seed);
-        px[i] = xvalues[i] + rand(si);
-        py[i] = yvalues[i] + rand(si.wrapping_mul(1234125417));
+        px[i] = xvalues[i] + noise1d(0.3 * t + rand(si * 1414197), si);
+        py[i] = yvalues[i] + noise1d(0.3 * t + rand(si * 1324157), si.wrapping_mul(1234125417));
+
     }
     let mut d = [(0, 0.0); 9];
     for i in 0..9 {

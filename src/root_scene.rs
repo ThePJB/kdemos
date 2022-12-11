@@ -18,6 +18,7 @@ use crate::demos::wildfire_evo::*;
 use crate::demos::terrain::*;
 use crate::demos::hydrasim::*;
 use crate::demos::level_test::*;
+use crate::demos::sacred_worley::*;
 
 pub struct RootScene {
     curr_scene: Option<Box<dyn Demo>>,
@@ -45,6 +46,7 @@ impl RootScene {
         // Noise
         demo_table.push(("Recnoise", init_demo::<NoiseTest>));
         demo_table.push(("wizrad terrain", init_demo::<WizradTerrain>));
+        demo_table.push(("sacred worley", init_demo::<SacredWorley>));
 
         // Others
         demo_table.push(("Percolation", init_demo::<Percoviz>));
