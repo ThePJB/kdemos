@@ -1,5 +1,3 @@
-#![feature(drain_filter)]
-
 mod application;
 mod video;
 mod kmath;

@@ -70,7 +70,7 @@ pub struct RGBUTM {
 
 impl Default for RGBUTM {
     fn default() -> Self {
-        Self::new(200, 200, 129837123)
+        Self::new(1584/4, 396/4, 129837123)
     }
 }
 
@@ -92,7 +92,7 @@ impl RGBUTM {
             head_colour,
             head_x,
             head_y,
-            steps_per_frame: 100,
+            steps_per_frame: 200,
         }
     }
 }

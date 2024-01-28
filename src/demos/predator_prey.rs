@@ -143,11 +143,11 @@ impl Demo for PredatorPrey {
                     if (idx + 1) % self.w != 0 {
                         move_options.push(idx + 1);
                     }
-                    move_options.drain_filter(|cidx| match self.grid[*cidx] {
-                        Tile::Predator(_) => true,
-                        Tile::Food => true,
-                        _ => false,
-                    });
+                    // move_options.drain_filter(|cidx| match self.grid[*cidx] {
+                    //     Tile::Predator(_) => true,
+                    //     Tile::Food => true,
+                    //     _ => false,
+                    // });
                     nmo[move_options.len()] += 1;
         
                     let dest_idx = if move_options.len() == 0 {
@@ -204,11 +204,11 @@ impl Demo for PredatorPrey {
                     if (idx + 1) % self.w != 0 {
                         move_options.push(idx + 1);
                     }
-                    move_options.drain_filter(|cidx| match self.grid[*cidx] {
-                        Tile::Predator(_) => true,
-                        Tile::Prey(_) => true,
-                        _ => false,
-                    });
+                    // move_options.drain_filter(|cidx| match self.grid[*cidx] {
+                    //     Tile::Predator(_) => true,
+                    //     Tile::Prey(_) => true,
+                    //     _ => false,
+                    // });
                     nmo[move_options.len()] += 1;
         
                     let dest_idx = if move_options.len() == 0 {

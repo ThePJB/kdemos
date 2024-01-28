@@ -1,4 +1,5 @@
 use glutin::event::VirtualKeyCode;
+use crate::demos::sea_of_blood::SeaOfBlood;
 use crate::scene::*;
 use crate::kmath::*;
 
@@ -19,6 +20,7 @@ use crate::demos::terrain::*;
 use crate::demos::hydrasim::*;
 use crate::demos::level_test::*;
 use crate::demos::sacred_worley::*;
+use crate::demos::noise_explorer::*;
 
 pub struct RootScene {
     curr_scene: Option<Box<dyn Demo>>,
@@ -47,6 +49,8 @@ impl RootScene {
         demo_table.push(("Recnoise", init_demo::<NoiseTest>));
         demo_table.push(("wizrad terrain", init_demo::<WizradTerrain>));
         demo_table.push(("sacred worley", init_demo::<SacredWorley>));
+        demo_table.push(("Noise Explorer", init_demo::<NoiseExplorer>));
+        demo_table.push(("Sea of Blood", init_demo::<SeaOfBlood>));
 
         // Others
         demo_table.push(("Percolation", init_demo::<Percoviz>));

@@ -96,10 +96,6 @@ impl Terrain {
 
                 let slopeyness = remap(norm.y, 0.95, 1.0, 0.0, 1.0);
 
-
-
-
-
                 let c1 = Vec4::new(1.0, 0.0, 0.0, 1.0);
                 let c2 = Vec4::new(0.0, 1.0, 0.0, 1.0);
 

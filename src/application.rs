@@ -13,8 +13,8 @@ pub struct Application {
 
 impl Application {
     pub fn new(event_loop: &EventLoop<()>) -> Application {
-        let xres = 1600;
-        let yres = 1600;
+        let xres = 1584;
+        let yres = 396;
     
         let video = Video::new("kdemos", xres as f64, yres as f64, event_loop);
         

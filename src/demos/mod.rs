@@ -16,3 +16,6 @@ pub mod terrain;
 pub mod hydrasim;
 pub mod level_test;
 pub mod sacred_worley;
+pub mod noise_explorer;
+pub mod sea_of_blood;
+pub mod rgbthing;
